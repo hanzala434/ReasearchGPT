@@ -7,17 +7,21 @@
     },
     {
       "src": "agent/main.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "maxLambdaSize": "250mb",
+        "runtime": "python3.9"
+      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "app/api/$1"
+      "dest": "/app/api/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "app/$1"
+      "dest": "/app/$1"
     }
   ],
   "env": {
