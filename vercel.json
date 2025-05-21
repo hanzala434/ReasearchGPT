@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "app/api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "agent/main.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "app/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "app/$1"
+    }
+  ],
+  "env": {
+    "PYTHONPATH": "."
+  }
+} 
