@@ -1,0 +1,13 @@
+Research Topic: Balanced Diet Plan for a 25-Year-Old Man
+
+Summary:
+A balanced diet plan for a 25-year-old man should include lean proteins, complex carbohydrates, healthy fats, and fresh vegetables. Protein sources include lean meats, while complex carbs are found in whole grains. Healthy fats can be sourced from avocados, olive oil, and nuts. The diet should provide essential nutrients, vitamins, fiber, and food energy while minimizing processed foods and sugary drinks.
+
+Sources:
+- search results
+- Wikipedia search
+
+Tools Used:
+- search
+- wikipedia_search
+- save_text_to_file

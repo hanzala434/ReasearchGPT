@@ -1,0 +1,22 @@
+--- Research Output #1 ---
+Timestamp: 2025-05-21 14:19:22
+
+The search query 'Sample query for testing' returned results related to SQL queries used in interviews and for testing purposes. It emphasizes the importance of practicing SQL with sample databases for career development. Additionally, a Wikipedia search result discussed 'Property testing,' a field in theoretical computer science focused on fast algorithms for approximate decision-making on large objects.
+
+
+==================================================
+
+--- Research Output #1 ---
+Timestamp: 2025-05-21 14:24:37
+
+The query 'your test query here' was researched using a web search and a Wikipedia search. The web search provided information on test tools for Azure Test Plans, API testing scenarios in Postman, testing SQL queries, and retrieving test cases in Zephyr Squad using Jira Query Language. The Wikipedia search provided a summary of software testing, defining it as checking whether software satisfies expectations and providing information about the quality and risk of failure. It also notes that software testing can determine correctness for specific scenarios but cannot find all bugs.
+
+==================================================
+
+--- Research Output #1 ---
+Timestamp: 2025-05-21 14:31:04
+
+Based on the search and wikipedia results, 'your test query here' appears to be related to software testing and various testing scenarios. The search results mention options for running tests, including selecting specific builds and using manual tests with web browser-based runners. It also mentions using query parameters in tests and viewing test results. The Wikipedia search provides a general definition of software testing, highlighting its purpose in assessing software quality and identifying risks. It also clarifies the limitations of software testing, noting that it cannot guarantee the absence of all bugs.
+
+==================================================
+

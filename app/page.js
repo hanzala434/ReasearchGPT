@@ -1,103 +1,256 @@
-import Image from "next/image";
+// File: app/page.js
+'use client'
+
+import { useState } from 'react'
+import { Download, Search, FileText, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [prompt, setPrompt] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [result, setResult] = useState(null)
+  const [error, setError] = useState('')
+  const [downloadInfo, setDownloadInfo] = useState(null)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!prompt.trim()) return
+
+    setIsLoading(true)
+    setError('')
+    setResult(null)
+    setDownloadInfo(null)
+
+    try {
+      const response = await fetch('/api/research', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: prompt }),
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to generate research')
+      }
+
+      const data = await response.json()
+      setResult(data)
+      setDownloadInfo(data.download)
+    } catch (err) {
+      setError(err.message || 'An error occurred while generating research')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const downloadFile = async () => {
+    if (downloadInfo?.url) {
+      try {
+        // Fetch the file content
+        const response = await fetch(downloadInfo.url)
+        if (!response.ok) throw new Error('Failed to download file')
+        
+        // Get the blob from the response
+        const blob = await response.blob()
+        
+        // Create a download link
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = downloadInfo.filename || 'research.txt'
+        
+        // Trigger the download
+        document.body.appendChild(link)
+        link.click()
+        
+        // Clean up
+        document.body.removeChild(link)
+        window.URL.revokeObjectURL(url)
+      } catch (err) {
+        setError('Failed to download file: ' + err.message)
+      }
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <div className="flex items-center justify-center mb-4">
+            <FileText className="w-12 h-12 text-indigo-600 mr-3" />
+            <h1 className="text-4xl font-bold text-gray-900">AI Research Assistant</h1>
+          </div>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Enter your research topic and get a comprehensive research document instantly
+          </p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+
+        {/* Main Content */}
+        <div className="max-w-4xl mx-auto">
+          {/* Input Form */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="prompt" className="block text-lg font-semibold text-gray-700 mb-3">
+                  What would you like to research?
+                </label>
+                <textarea
+                  id="prompt"
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  placeholder="Enter your research topic here... (e.g., 'diet plan for healthy 23-year-old male', 'climate change effects on agriculture', etc.)"
+                  className="w-full h-32 px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-indigo-500 focus:ring-indigo-500 focus:outline-none resize-none text-gray-700 placeholder-gray-400"
+                  disabled={isLoading}
+                />
+              </div>
+              
+              <button
+                type="submit"
+                disabled={isLoading || !prompt.trim()}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-4 px-6 rounded-lg transition duration-200 flex items-center justify-center space-x-2 text-lg"
+              >
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                    <span>Researching...</span>
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-5 h-5" />
+                    <span>Generate Research</span>
+                  </>
+                )}
+              </button>
+            </form>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-8 rounded-r-lg">
+              <div className="flex items-center">
+                <AlertCircle className="w-5 h-5 text-red-400 mr-2" />
+                <p className="text-red-700 font-medium">{error}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Results */}
+          {result && (
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center">
+                  <CheckCircle className="w-6 h-6 text-green-500 mr-2" />
+                  <h2 className="text-2xl font-bold text-gray-900">Research Complete!</h2>
+                </div>
+                {downloadInfo && (
+                  <button
+                    onClick={downloadFile}
+                    className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 flex items-center space-x-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Research</span>
+                  </button>
+                )}
+              </div>
+
+              <div className="space-y-6">
+                {/* Topic */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Topic</h3>
+                  <p className="text-gray-700 bg-gray-50 p-3 rounded-lg">{result.topic}</p>
+                </div>
+
+                {/* Summary */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-2">Research Summary</h3>
+                  <div className="text-gray-700 bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
+                    {result.summary}
+                  </div>
+                </div>
+
+                {/* Key Points */}
+                {result.key_points && result.key_points.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Key Points</h3>
+                    <ul className="space-y-2">
+                      {result.key_points.map((point, index) => (
+                        <li key={index} className="text-gray-700 bg-gray-50 p-3 rounded-lg flex items-start">
+                          <span className="inline-block w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full text-sm font-medium text-center mr-2 mt-0.5">
+                            {index + 1}
+                          </span>
+                          {point}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Detailed Analysis */}
+                {result.detailed_analysis && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Detailed Analysis</h3>
+                    <div className="text-gray-700 bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
+                      {result.detailed_analysis}
+                    </div>
+                  </div>
+                )}
+
+                {/* Sources */}
+                {result.sources && result.sources.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Sources Used</h3>
+                    <ul className="space-y-2">
+                      {result.sources.map((source, index) => (
+                        <li key={index} className="text-gray-700 bg-gray-50 p-2 rounded flex items-start">
+                          <span className="inline-block w-6 h-6 bg-indigo-100 text-indigo-600 rounded-full text-sm font-medium text-center mr-2 mt-0.5">
+                            {index + 1}
+                          </span>
+                          {source}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Tools Used */}
+                {result.tools_used && result.tools_used.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-2">Research Methods</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {result.tools_used.map((tool, index) => (
+                        <span
+                          key={index}
+                          className="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-medium"
+                        >
+                          {tool.replace('_', ' ')}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isLoading && (
+            <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">Generating Research...</h3>
+                <p className="text-gray-600">This may take a few moments while we gather information from multiple sources.</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="text-center mt-16 text-gray-500">
+          <p>Powered by AI Research Assistant • Developed by Hanzala</p>
+        </div>
+      </div>
     </div>
-  );
+  )
 }
